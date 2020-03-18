@@ -4,11 +4,15 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    TouchableOpacity,
     View
 } from 'react-native';
 import {
   SvgUri
 } from 'react-native-svg';
+import {
+  Colors
+} from 'react-native/Libraries/NewAppScreen';
 //默认应用的容器组件
 export default class signin extends Component {
 
@@ -17,6 +21,8 @@ export default class signin extends Component {
         super(props);
         this.state = {
             responseText:null,
+            username:null,
+            password:null,
             text:null,
             csrftoken:null
         };
@@ -26,14 +32,27 @@ export default class signin extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.item} >登录页面</Text>
-                <Text style={styles.item1} onPress={this.doFetch1.bind(this)}>获取</Text>
-                <SvgUri width="200" height="60" uri="http://192.168.1.105:8080/captcha" />
-                <TextInput style={{height: 40}}
-                     placeholder="Type here to translate!"
+                <Text style={styles.item} >凿物</Text>
+                <TextInput style={styles.item2}
+                      placeholder="用户名"
+                      onChangeText={(username) => this.setState({username})}
+                      value={this.state.username}
+                />
+                <TextInput style={styles.item2}
+                      placeholder="密码"
+                      //secureTextEntry={true}
+                      onChangeText={(password) => this.setState({password})}
+                      value={this.state.password}
+                />
+                <TouchableOpacity style={{alignItems:'center'}}onPress={()=>{var csrftoken=0;this.setState(csrftoken)}}>
+                    <SvgUri width="200" height="60" uri="http://192.168.1.105:8080/captcha" />
+                </TouchableOpacity>
+                <TextInput style={styles.item2}
+                     placeholder="请输入验证码"
                      onChangeText={(text) => this.setState({text})}
                      value={this.state.text}
                 />
+                <Text style={styles.item1} onPress={this.doFetch1.bind(this)}>登录</Text>
             </View>
         );
     }
@@ -65,8 +84,8 @@ export default class signin extends Component {
                 captcha:this.state.text,
                 csrfToken:this.state.csrftoken,
                 };*/
-           formData.append("username","13619083490");
-           formData.append("password","78711673pP");
+           formData.append("username",this.state.username);
+           formData.append("password",this.state.password);
            formData.append("method","account");
            formData.append("captcha",this.state.text);
            //formData.append("_csrf",this.state.csrftoken);
@@ -104,5 +123,11 @@ const styles = StyleSheet.create({
         padding:6,
         borderColor:'#ddd',
         textAlign:'center'
+    },
+    item2:{
+        margin:10,
+        height:30,
+        padding:6,
+        backgroundColor: Colors.white
     },
 });

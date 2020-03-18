@@ -8,9 +8,15 @@ import {
     Image,
     FlatList,
 } from 'react-native';
+import {
+  Colors
+} from 'react-native/Libraries/NewAppScreen';
 //默认应用的容器组件
 export default class main extends Component {
     //构造函数
+    navigationOptions:{
+          header:null,
+            }
     constructor(props) {
         super(props);
         this.state = {
@@ -54,6 +60,9 @@ export default class main extends Component {
     doFetch1(item){
         this.props.navigation.navigate('details',{item:item});
     }
+    doFetch2(){
+            this.props.navigation.navigate('createPage');
+        }
     doFetch(){
         if(this.state.text!="")
         {
@@ -75,12 +84,20 @@ export default class main extends Component {
         }
         else{this.onload();}
     }
+    signout(){
+        fetch('http://192.168.1.105:8080/signout')
+        .catch((error) => {
+                      console.error(error);
+        });
+        this.props.navigation.navigate('signin');
+    }
     render() {
         if(this.state.get){this.onload();var get=0;this.setState({get})}
         return (
             <View style={styles.container}>
-                <Text style={styles.item} >主页面</Text>
-                <TextInput style={{height: 40,textAlign:'center'}}
+                <Text style={{margin:15,height: 40,padding:6,textAlign:'center',backgroundColor: Colors.white}} onPress={this.signout.bind(this)}>退出登录</Text>
+                <Text style={{margin:15,height: 40,padding:6,textAlign:'center',backgroundColor: Colors.white}} onPress={this.doFetch2.bind(this)}>新建</Text>
+                <TextInput style={styles.item}
                      placeholder="搜索"
                      onChangeText={(text) => this.setState({text})}
                      onKeyPress={this.doFetch.bind(this)}
@@ -91,7 +108,7 @@ export default class main extends Component {
                      renderItem={(item)=>this._renderItemView(item)}
                 />
             </View>
-        );
+        )
     }
 }
 
@@ -99,24 +116,24 @@ export default class main extends Component {
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        marginTop:25
     },
     content:{
-        margin:20,
+        margin:5,
         flexDirection: "row",
-        padding: 20,
-        borderWidth:1,
+        padding: 15,
+        backgroundColor: Colors.white
     },
     item:{
-            margin:15,
-            height:30,
-            padding:6,
-            textAlign:'center'
+            margin:5,
+            height: 40,
+            textAlign:'center',
+            backgroundColor: Colors.white
         },
     title:{
         height:30,
         flex:1,
-        textAlign:'center'
+        textAlign:'center',
+        backgroundColor: Colors.white
     },
     imgStyle: {
             width:100,

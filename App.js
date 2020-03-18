@@ -27,6 +27,7 @@ import {createDrawerNavigator} from 'react-navigation-drawer';
 import signin from './src/signin';
 import main from './src/main';
 import details from './src/details';
+import createPage from './src/createPage';
 
 /**
  * 配置底部标签
@@ -111,6 +112,9 @@ const Stack = createStackNavigator({
     details: {
         screen: details,
     },
+    createPage: {
+            screen: createPage,
+        },
     signin: {
         screen: signin,
         navigationOptions:{

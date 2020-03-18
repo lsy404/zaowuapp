@@ -30,6 +30,7 @@ export default class details extends Component {
             fetch(uri)
             .then((response) => {return response.text();})
             .then((responseData) => {
+                console.log(responseData);
                 let normalText = [];
                 let specialText = [];
                 let post_id;
