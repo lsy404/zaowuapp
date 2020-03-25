@@ -24,7 +24,6 @@ export default class signin extends Component {
             username:null,
             password:null,
             text:null,
-            csrftoken:null
         };
     }
 
@@ -44,8 +43,8 @@ export default class signin extends Component {
                       onChangeText={(password) => this.setState({password})}
                       value={this.state.password}
                 />
-                <TouchableOpacity style={{alignItems:'center'}}onPress={()=>{var csrftoken=0;this.setState(csrftoken)}}>
-                    <SvgUri width="200" height="60" uri="http://192.168.1.105:8080/captcha" />
+                <TouchableOpacity style={{alignItems:'center'}}>
+                    <SvgUri width="200" height="60" uri="http://192.168.1.106:8080/captcha" />
                 </TouchableOpacity>
                 <TextInput style={styles.item2}
                      placeholder="请输入验证码"
@@ -58,49 +57,43 @@ export default class signin extends Component {
     }
 /*
     doFetch(){
-           fetch('http://192.168.1.105:8080/signin')
-           .then((response) => {return response.text();})
-           .then((responseData) => {
-                 alert("请求成功！");
-                 var csrf=responseData;
-                 var split1=csrf.split("csrf:'");
-                 var split2=split1[1].split("'");
-                 var csrftoken=split2[0];
-                 console.log(csrftoken);
-                 console.log('http://192.168.1.105:8080/signin');
-                 this.setState({csrftoken});
-           })
-           .catch((error) => {
-                 alert("请求失败！");
-           });
+
      }
 */
     doFetch1(){
-           let formData = new FormData();
-           /*let param = {
-                username:'13619083490',
-                password:'78711673pP',
-                method:'account',
-                captcha:this.state.text,
-                csrfToken:this.state.csrftoken,
-                };*/
-           formData.append("username",this.state.username);
-           formData.append("password",this.state.password);
-           formData.append("method","account");
-           formData.append("captcha",this.state.text);
-           //formData.append("_csrf",this.state.csrftoken);
-           //console.log(this.state.csrftoken);
-           fetch('http://192.168.1.105:8080/signin' , {
-                 method: 'POST',
-                 body: /*JSON.stringify(param)*/formData
-           }).then((response) => {
-                 return response.json();
-           }).then((json) => {
-                 alert(JSON.stringify(json));
-                 if(json.success==false)this.props.navigation.navigate('main');
-           }).catch((error) => {
-                 console.error(error);
-           });
+        fetch('http://192.168.1.106:8080/signin')
+        .then((response) => {return response.text();})
+        .then((responseData) => {
+              var csrf=responseData;
+              var split1=csrf.split("csrf:'");
+              var split2=split1[1].split("'");
+              var csrftoken=split2[0];
+              let params = {
+                    username:this.state.username,
+                    password:this.state.password,
+                    method:"account",
+                    captcha:this.state.text,
+                    _csrf:csrftoken,
+              };
+              fetch('http://192.168.1.106:8080/signin' , {
+                    method: 'POST',
+                    headers: {
+                           Accept: 'application/json',
+                           'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(params),
+              }).then((response) => {
+                    return response.json();
+              }).then((json) => {
+                    alert(JSON.stringify(json));
+                    if(json.success==false)this.props.navigation.navigate('main');
+              }).catch((error) => {
+                    console.error(error);
+              });
+        })
+        .catch((error) => {
+              console.error(error);
+        });
      }
 }
 

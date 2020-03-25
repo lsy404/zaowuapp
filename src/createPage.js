@@ -18,6 +18,7 @@ import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 import RadioModal from 'react-native-radio-master';
+import PropTypes from 'prop-types';
 //默认应用的容器组件
 var width = Dimensions.get('window').width;
 export default class createPage extends Component {
@@ -73,6 +74,17 @@ export default class createPage extends Component {
     //构造函数
     constructor(props) {
         super(props);
+        fetch('http://192.168.1.106:8080/p/create')
+        .then((response) => {return response.text();})
+        .then((responseData) => {
+             var csrf=responseData;
+             var split1=csrf.split("csrf:'");
+             var split2=split1[1].split("'");
+             var csrftoken=split2[0];
+             this.setState({csrftoken});
+        }).catch((error) => {
+             console.error(error);
+        });
         let taglist=[];
         for (let i = 0; i < 45; i++) {
              let tag = this.props.taglist[i];
@@ -94,11 +106,16 @@ export default class createPage extends Component {
             post_id:null,
             tips:null,
             star:0,
-            is_original:false
+            is_original:false,
+            reference_post:[],
+            attachments:[],
+            csrftoken:null,
         };
-        if(this.state.materiallist.length==0)this.state.materiallist.push({'id':0,'name':null,'amount':0,'memo':null});
+        if(this.state.materiallist.length==0)this.state.materiallist.push({'name':null,'amount':0,'memo':null});
         if(this.state.stepdata.length==0)this.state.stepdata.push({'text':null,'pictures':[]});
+
     }
+
     //渲染
     render() {
          return (
@@ -161,8 +178,8 @@ export default class createPage extends Component {
                                    style={{ flexDirection:'row',flexWrap:'wrap',
                                            alignItems:'flex-start',padding:5,marginTop:10
                                               }}>
-                                   <Text value="true">原创声明</Text>
-                                   <Text value="false">转载声明</Text>
+                                   <Text value='true'>原创声明</Text>
+                                   <Text value='false'>转载声明</Text>
                              </RadioModal>
                         </View>
 
@@ -288,11 +305,17 @@ export default class createPage extends Component {
         ImagePicker.openPicker({
            width: a,
            height: b,
-           cropping: true
+           cropping: false
          }).then(image => {
             if(a==1127){let uri=image.path;this.setState({uri});}
-            let uri1=image.path;
-            this.setState({uri1});
+                ImagePicker.openCropper({
+                  path: image.path,
+                  width: 290,
+                  height: 370
+                }).then(image => {
+                  let uri1=image.path;
+                  this.setState({uri1});
+                });
          });
     }
     dostep(item){
@@ -303,7 +326,7 @@ export default class createPage extends Component {
              }).then(image => {
                 item.item.pictures[0]=image.path;
                 this.setState((state) => {
-                     state.stepdata[item.index]= item.item;
+                     state.stepdata[item.index].pictures= item.item.pictures;
                      return { stepdata: state.stepdata }
                 })
              });
@@ -317,7 +340,7 @@ export default class createPage extends Component {
     newmaterial(){
         var materiallist=this.state.materiallist;
         let a=materiallist.length;
-        materiallist.push({'id':a,'name':null,'amount':0,'memo':null});
+        materiallist.push({'name':null,'amount':0,'memo':null});
         this.setState({materiallist});
     }
     _renderItemView(item){
@@ -346,20 +369,17 @@ export default class createPage extends Component {
             <View style={{flexDirection: "row"}}>
                  <TextInput style={{margin:10,height:30,padding:6,backgroundColor: Colors.white,flex:2}}
                     onChangeText={(name) =>this.setState((state) => {
-                        item.item.name = name;
-                        state.materiallist[item.index] = item;
+                        state.materiallist[item.index].name = name;
                         return { materiallist: state.materiallist }
                     })} value={item.item.name} placeholder="材料名" />
                  <TextInput style={{margin:10,height:30,padding:6,backgroundColor: Colors.white,flex:1}}
                     onChangeText={(amount) =>this.setState((state) => {
-                        item.item.amount = amount;
-                        state.materiallist[item.index] = item;
+                        state.materiallist[item.index].amount = amount;
                         return { materiallist: state.materiallist }
                     })} value={item.item.amount} placeholder="材料数" />
                  <TextInput style={{margin:10,height:30,padding:6,backgroundColor: Colors.white,flex:4}}
                     onChangeText={(memo) =>this.setState((state) => {
-                        item.item.memo = memo;
-                        state.materiallist[item.index] = item;
+                        state.materiallist[item.index].memo = memo;
                         return { materiallist: state.materiallist }
                     })} value={item.item.memo} placeholder="备注" />
             </View>
@@ -369,41 +389,103 @@ export default class createPage extends Component {
         let selectTagItem=this.state.selectTagItem;
         let tagData = this.state.tagData;
         let len = this.state.selectTagItem.length;
-        let ShowTagItem=[];
+        let TagShow=[];
         for (let i = 0; i < len; i++) {
              let tag = selectTagItem[i];
              let item=tagData[tag];
-             ShowTagItem.push(tagData[tag].name);
+             TagShow.push(item.name);
         }
-        let formData = new FormData();
-        formData.append("title",this.state.name);
-        formData.append("cover_pic",this.state.uri);
-        formData.append("cover_pic_card",this.state.uri1);
-        formData.append("is_original",this.state.is_original);
-        formData.append("difficulty",this.state.star);
-        formData.append("tags",ShowTagItem);
-        formData.append("description",this.state.description);
-        formData.append("stuff",this.state.materiallist);
-        formData.append("steps",this.state.stepdata);
-        //formData.append("reference_post",this.state.post_id);
-        formData.append("tips",this.state.tips);
-        //formData.append("reprint_memo",this.state.text);
-        //formData.append("attachments",this.state.text);
-        //formData.append("draft_of",this.state.text);
-        fetch('http://192.168.1.105:8080/p/create' , {
-              method: 'POST',
-              body: formData
-        }).then((response) => {
-              return response.json();
-        }).then((json) => {
-              alert(JSON.stringify(json));
-        }).catch((error) => {
-              console.error(error);
-        });
+        var is_original=this.state.is_original==="true"?true:false;
+
+        let stepdata=this.state.stepdata;
+        let len2 = this.state.stepdata.length;
+        let formData;
+        let i=0;
+        let step_uri=[];
+        for (; i < len2; i++) {
+             let a=stepdata[i].pictures[0];
+             formData = new FormData();
+             let file = {uri:a,name:'image.png',type:'multipart/form-data'};
+             formData.append("files",file);
+             fetch('http://192.168.1.106:8080/upload_stepCover?_csrf='+this.state.csrftoken , {
+                   method: 'POST',
+                   body:formData,
+             }).then((response) => {
+                   return response.json();
+             }).then((json) => {
+                   let step_cover=JSON.stringify(json.url);
+                   step_cover=step_cover.replace("\"", "").replace("\"", "");
+                   for(let k=0;k<10;k++)step_cover=step_cover.replace("\\\\", "\\");
+                   step_uri.push(step_cover);
+                   if(step_uri.length==len2)
+                   {
+                        for(i=0;i<len2;i++) stepdata[i].pictures[0]=step_uri[i];
+                        formData = new FormData();
+                        let file = {uri:this.state.uri,name:'image.png',type:'multipart/form-data'};
+                        formData.append("files",file);
+                        fetch('http://192.168.1.106:8080/upload_cover?_csrf='+this.state.csrftoken , {
+                             method: 'POST',
+                             body:formData,
+                        }).then((response) => {
+                             return response.json();
+                        }).then((json) => {
+                             let cover_pic=JSON.stringify(json.url);
+                             cover_pic=cover_pic.replace("\"", "").replace("\"", "");
+                             for(let i=0;i<10;i++)cover_pic=cover_pic.replace("\\\\", "\\");
+                             let formData = new FormData();
+                             let file = {uri:this.state.uri1,name:'image.png',type:'multipart/form-data'};
+                             formData.append("files",file);
+                             fetch('http://192.168.1.106:8080/upload_cover?_csrf='+this.state.csrftoken , {
+                                   method: 'POST',
+                                   body:formData,
+                             }).then((response) => {
+                                   return response.json();
+                             }).then((json) => {
+                                   let cover_pic_card=JSON.stringify(json.url);
+                                   cover_pic_card=cover_pic_card.replace("\"", "").replace("\"", "");
+                                   for(let i=0;i<10;i++)cover_pic_card=cover_pic_card.replace("\\\\", "\\");
+                                   let params = {
+                                             title:this.state.name,
+                                             is_original:is_original,
+                                             difficulty:this.state.star,
+                                             stuff:this.state.materiallist,
+                                             steps:this.state.stepdata,
+                                             reference_post:this.state.reference_post,
+                                             attachments:this.state.attachments,
+                                             cover_pic:cover_pic,
+                                             cover_pic_card:cover_pic_card,
+                                             tags:TagShow,
+                                             description:this.state.description,
+                                             tips:this.state.tips
+                                   };
+                                   fetch('http://192.168.1.106:8080/p/create?_csrf='+this.state.csrftoken , {
+                                         method: 'POST',
+                                         headers: {
+                                                Accept: 'application/json',
+                                                'Content-Type': 'application/json',
+                                         },
+                                         body: JSON.stringify(params),
+                                   }).then((response) => {
+                                         return response.json();
+                                   }).then((json) => {
+                                         alert(JSON.stringify(json));
+                                         if(json.success==true)this.props.navigation.navigate('main',1);
+                                   }).catch((error) => {
+                                         console.error(error);
+                                   });
+                             }).catch((error) => {
+                                   console.error(error);
+                             });
+                        }).catch((error) => {
+                             console.error(error);
+                        });
+                   }
+             }).catch((error) => {
+                   console.error(error);
+             });
+        }
     }
-
 }
-
 //样式定义
 const styles = StyleSheet.create({
     container:{

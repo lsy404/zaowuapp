@@ -23,33 +23,49 @@ export default class main extends Component {
             responseText:null,
             text:null,
             data:[],
-            get:1
+            get:1,
+            csrftoken:null,
         };
     }
     onload(){
-        let formData = new FormData();
-        formData.append("skip","0");
-        formData.append("limit","10");
-        fetch('http://192.168.1.105:8080/zaos',{
-               method: 'POST',
-               body:formData
-        })
-        .then((response) => {
-               return response.json();
-        }).then((json) => {
-               //alert(JSON.stringify(json.data));
-               return json.data;
-        }).then((data) => {
-               this.setState({data});
-        }).catch((error) => {
-               console.error(error);
-        });
+        fetch('http://192.168.1.106:8080/')
+            .then((response) => {return response.text();})
+            .then((responseData) => {
+                  var csrf=responseData;
+                  var split1=csrf.split("csrf:'");
+                  var split2=split1[1].split("'");
+                  var csrftoken=split2[0];
+                  this.setState({csrftoken});
+                  let params = {
+                         skip:0,
+                         limit:10,
+                         _csrf:csrftoken,
+                  };
+                  fetch('http://192.168.1.106:8080/zaos',{
+                       method: 'POST',
+                       headers: {
+                             Accept: 'application/json',
+                             'Content-Type': 'application/json',
+                       },
+                       body: JSON.stringify(params),
+                  }).then((response) => {
+                       return response.json();
+                  }).then((json) => {
+                       return json.data;
+                  }).then((data) => {
+                       this.setState({data});
+                  }).catch((error) => {
+                       console.error(error);
+                  });
+            }).catch((error) => {
+                  console.error(error);
+            });
     }
     //渲染
     _renderItemView(item){
         //console.log(item.index);
         //console.log(item);
-        var uri='http://192.168.1.105:8080'+item.item.cover_pic_card;
+        var uri='http://192.168.1.106:8080'+item.item.cover_pic_card;
         return (
           <View style={styles.content} >
               <Image style={styles.imgStyle} source={{uri:uri}}></Image>
@@ -64,35 +80,41 @@ export default class main extends Component {
             this.props.navigation.navigate('createPage');
         }
     doFetch(){
-        if(this.state.text!="")
+        if(this.state.text)
         {
-        let formData = new FormData();
-        formData.append("keyword",this.state.text);
-        fetch('http://192.168.1.105:8080/search',{
-              method: 'POST',
-              body:formData
-        })
-        .then((response) => {
-              return response.json();
-        }).then((json) => {
-              return json.data.posts;
-        }).then((data) => {
-              this.setState({data});
-        }).catch((error) => {
-              console.error(error);
-        });
+            let params = {
+                 keyword:this.state.text,
+                  _csrf:this.state.csrftoken,
+             };
+             fetch('http://192.168.1.106:8080/search',{
+                   method: 'POST',
+                   headers: {
+                       Accept: 'application/json',
+                       'Content-Type': 'application/json',
+                   },
+                   body: JSON.stringify(params),
+              }).then((response) => {
+                    return response.json();
+             }).then((json) => {
+                    return json.data.posts;
+             }).then((data) => {
+                   this.setState({data});
+             }).catch((error) => {
+                   console.error(error);
+             });
         }
         else{this.onload();}
     }
     signout(){
-        fetch('http://192.168.1.105:8080/signout')
+        fetch('http://192.168.1.106:8080/signout')
         .catch((error) => {
-                      console.error(error);
+              console.error(error);
         });
         this.props.navigation.navigate('signin');
     }
     render() {
-        if(this.state.get){this.onload();var get=0;this.setState({get})}
+        let item = this.props.navigation.state.params;
+        if(this.state.get||item){this.onload();var get=0;this.setState({get});this.props.navigation.state.params=0}
         return (
             <View style={styles.container}>
                 <Text style={{margin:15,height: 40,padding:6,textAlign:'center',backgroundColor: Colors.white}} onPress={this.signout.bind(this)}>退出登录</Text>
