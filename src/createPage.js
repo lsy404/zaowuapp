@@ -21,6 +21,7 @@ import RadioModal from 'react-native-radio-master';
 import PropTypes from 'prop-types';
 //默认应用的容器组件
 var width = Dimensions.get('window').width;
+var url='http://192.168.1.106:8080';
 export default class createPage extends Component {
     static defaultProps = {
             taglist: [
@@ -74,7 +75,7 @@ export default class createPage extends Component {
     //构造函数
     constructor(props) {
         super(props);
-        fetch('http://192.168.1.106:8080/p/create')
+        fetch(url+'/p/create')
         .then((response) => {return response.text();})
         .then((responseData) => {
              var csrf=responseData;
@@ -407,7 +408,7 @@ export default class createPage extends Component {
              formData = new FormData();
              let file = {uri:a,name:'image.png',type:'multipart/form-data'};
              formData.append("files",file);
-             fetch('http://192.168.1.106:8080/upload_stepCover?_csrf='+this.state.csrftoken , {
+             fetch(url+'/upload_stepCover?_csrf='+this.state.csrftoken , {
                    method: 'POST',
                    body:formData,
              }).then((response) => {
@@ -423,7 +424,7 @@ export default class createPage extends Component {
                         formData = new FormData();
                         let file = {uri:this.state.uri,name:'image.png',type:'multipart/form-data'};
                         formData.append("files",file);
-                        fetch('http://192.168.1.106:8080/upload_cover?_csrf='+this.state.csrftoken , {
+                        fetch(url+'/upload_cover?_csrf='+this.state.csrftoken , {
                              method: 'POST',
                              body:formData,
                         }).then((response) => {
@@ -435,7 +436,7 @@ export default class createPage extends Component {
                              let formData = new FormData();
                              let file = {uri:this.state.uri1,name:'image.png',type:'multipart/form-data'};
                              formData.append("files",file);
-                             fetch('http://192.168.1.106:8080/upload_cover?_csrf='+this.state.csrftoken , {
+                             fetch(url+'/upload_cover?_csrf='+this.state.csrftoken , {
                                    method: 'POST',
                                    body:formData,
                              }).then((response) => {
@@ -458,7 +459,7 @@ export default class createPage extends Component {
                                              description:this.state.description,
                                              tips:this.state.tips
                                    };
-                                   fetch('http://192.168.1.106:8080/p/create?_csrf='+this.state.csrftoken , {
+                                   fetch(url+'/p/create?_csrf='+this.state.csrftoken , {
                                          method: 'POST',
                                          headers: {
                                                 Accept: 'application/json',

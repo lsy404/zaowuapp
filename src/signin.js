@@ -3,9 +3,12 @@ import {
     AppRegistry,
     StyleSheet,
     Text,
+    Image,
     TextInput,
     TouchableOpacity,
-    View
+    View,
+    Dimensions,
+    ActivityIndicator,
 } from 'react-native';
 import {
   SvgUri
@@ -14,21 +17,32 @@ import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 //默认应用的容器组件
+var width = Dimensions.get('window').width;
+var url='http://192.168.1.106:8080';
 export default class signin extends Component {
 
     //构造函数
     constructor(props) {
         super(props);
+        fetch(url+'/n/count')
+        .then((response) => {return response.json();})
+        .then((json) => {
+              this.setState({success:json.success});
+                 if(json.success==true)this.props.navigation.navigate('main');
+              }).catch((error) => {
+        });
         this.state = {
-            responseText:null,
             username:null,
             password:null,
             text:null,
+            success:null,
+            get:1,
         };
-    }
 
+    }
     //渲染
     render() {
+        if(this.state.success==false)
         return (
             <View style={styles.container}>
                 <Text style={styles.item} >凿物</Text>
@@ -39,12 +53,11 @@ export default class signin extends Component {
                 />
                 <TextInput style={styles.item2}
                       placeholder="密码"
-                      //secureTextEntry={true}
                       onChangeText={(password) => this.setState({password})}
                       value={this.state.password}
                 />
                 <TouchableOpacity style={{alignItems:'center'}}>
-                    <SvgUri width="200" height="60" uri="http://192.168.1.106:8080/captcha" />
+                    <SvgUri width="200" height="60" uri={url+'/captcha'} />
                 </TouchableOpacity>
                 <TextInput style={styles.item2}
                      placeholder="请输入验证码"
@@ -52,16 +65,21 @@ export default class signin extends Component {
                      value={this.state.text}
                 />
                 <Text style={styles.item1} onPress={this.doFetch1.bind(this)}>登录</Text>
+                <Text style={{margin:10,marginLeft:width/6,height:30,padding:6}} onPress={this.signup.bind(this)}>注册账号</Text>
             </View>
         );
+        else return(
+            <TouchableOpacity  style={{alignItems:'center',marginTop:200,height:'100%',width: '100%'}}>
+                <Image style={{width:width/2,height:width/6}} source={{uri:url+'/public/img/page/logot.png'}}></Image>
+                <ActivityIndicator size={'large'}/>
+            </TouchableOpacity>
+        );
     }
-/*
-    doFetch(){
-
-     }
-*/
+    signup(){
+        this.props.navigation.navigate('signup');
+    }
     doFetch1(){
-        fetch('http://192.168.1.106:8080/signin')
+        fetch(url+'/signin')
         .then((response) => {return response.text();})
         .then((responseData) => {
               var csrf=responseData;
@@ -75,7 +93,7 @@ export default class signin extends Component {
                     captcha:this.state.text,
                     _csrf:csrftoken,
               };
-              fetch('http://192.168.1.106:8080/signin' , {
+              fetch(url+'/signin' , {
                     method: 'POST',
                     headers: {
                            Accept: 'application/json',
@@ -86,13 +104,11 @@ export default class signin extends Component {
                     return response.json();
               }).then((json) => {
                     alert(JSON.stringify(json));
-                    if(json.success==false)this.props.navigation.navigate('main');
+                    if(json.success)this.props.navigation.navigate('main');
               }).catch((error) => {
-                    console.error(error);
               });
         })
         .catch((error) => {
-              console.error(error);
         });
      }
 }
@@ -113,12 +129,16 @@ const styles = StyleSheet.create({
         margin:15,
         height:30,
         borderWidth:1,
+        marginLeft:width/6,
+        marginRight:width/6,
         padding:6,
         borderColor:'#ddd',
         textAlign:'center'
     },
     item2:{
         margin:10,
+        marginLeft:width/6,
+        marginRight:width/6,
         height:30,
         padding:6,
         backgroundColor: Colors.white

@@ -25,42 +25,59 @@ import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createDrawerNavigator} from 'react-navigation-drawer';
 import signin from './src/signin';
+import signup from './src/signup';
 import main from './src/main';
 import details from './src/details';
 import createPage from './src/createPage';
+import user from './src/user';
+import classify from './src/classify';
+import getbytags from './src/getbytags';
+import interest from './src/interest';
+import funs from './src/funs';
 
 /**
  * 配置底部标签
  */
 const Tab = createBottomTabNavigator({
     //每一个页面的配置
-    signin: {
-                  screen: signin,
-                  navigationOptions: ({navigation}) => ({
-                        header:null,
-                        tabBarLabel: '登录',
-                        tabBarVisible:false,
-                        header:null,
-                        tabBarIcon: ({tintColor}) => (
-                               <Image source={require('./img/card_checked.png')}
-                                      style={[{height: 24, width: 24}, {tintColor: tintColor}]}/>
-                        ),
 
-                  }),
-            },
     main: {
           screen: main,
           navigationOptions: ({navigation}) => ({
-                header:null,
                 tabBarLabel: '主页',
                 tabBarVisible:true,
                 tabBarIcon: ({tintColor}) => (
-                       <Image source={require('./img/card_checked.png')}
-                              style={[{height: 24, width: 24}, {tintColor: tintColor}]}/>
+                       <Image source={require('./img/主页.png')}
+                              style={[{height: 30, width: 30}, {tintColor: tintColor}]}/>
                 ),
 
           }),
     },
+    classify: {
+                      screen: classify,
+                      navigationOptions: ({navigation}) => ({
+                            tabBarLabel: '分类',
+                            tabBarVisible:true,
+                            tabBarIcon: ({tintColor}) => (
+                                   <Image source={require('./img/分类.png')}
+                                          style={[{height: 25, width: 25}, {tintColor: tintColor}]}/>
+                            ),
+
+                      }),
+                },
+    user: {
+              screen: user,
+              navigationOptions: ({navigation}) => ({
+                    tabBarLabel: '用户',
+                    tabBarVisible:true,
+                    tabBarIcon: ({tintColor}) => (
+                           <Image source={require('./img/用户.png')}
+                                  style={[{height: 25, width: 25}, {tintColor: tintColor}]}/>
+                    ),
+
+              }),
+        },
+
 
 }, {
     //设置TabNavigator的位置
@@ -103,25 +120,49 @@ const Tab = createBottomTabNavigator({
  * 配置堆栈导航
  */
 const Stack = createStackNavigator({
-    Tab: {
+    凿物: {
         screen: Tab,
+        navigationOptions:{
+             header:null,
+        }
     },
-    main: {
-        screen: main,
-        },
-    details: {
-        screen: details,
-    },
-    createPage: {
-            screen: createPage,
-        },
     signin: {
         screen: signin,
+        navigationOptions:{
+             header:null,
+        }
+    },
+    getbytags: {
+            screen: getbytags,
+            navigationOptions:{
+                 header:null,
+            }
+        },
+    main: {
+        screen: main,
+
+        },
+    user: {
+         screen: user,
+    },
+    我的关注: {
+             screen: interest,
+        },
+    我的粉丝: {
+             screen: funs,
+        },
+    项目详情: {
+        screen: details,
+    },
+    创建项目: {
+            screen: createPage,
+        },
+    signup:{
+        screen: signup,
         navigationOptions:{
               header:null,
         }
     },
-
 });
 
 /**
@@ -134,7 +175,7 @@ const Drawer = createDrawerNavigator({
             drawerLabel: '首页',
             drawerIcon: ({tintColor}) => (
                 <Image
-                    source={require('./img/card_checked.png')}
+                    source={require('./img/主页.png')}
                     style={[styles.icon, {tintColor: tintColor}]}
                 />
             ),
