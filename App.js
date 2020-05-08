@@ -34,7 +34,11 @@ import classify from './src/classify';
 import getbytags from './src/getbytags';
 import interest from './src/interest';
 import funs from './src/funs';
-
+import other from './src/other';
+import collect from './src/collect';
+import collectitem from './src/collectitem';
+import message from './src/message';
+import want from './src/want';
 /**
  * 配置底部标签
  */
@@ -47,7 +51,7 @@ const Tab = createBottomTabNavigator({
                 tabBarLabel: '主页',
                 tabBarVisible:true,
                 tabBarIcon: ({tintColor}) => (
-                       <Image source={require('./img/主页.png')}
+                       <Image source={require('./img/main.png')}
                               style={[{height: 30, width: 30}, {tintColor: tintColor}]}/>
                 ),
 
@@ -59,7 +63,7 @@ const Tab = createBottomTabNavigator({
                             tabBarLabel: '分类',
                             tabBarVisible:true,
                             tabBarIcon: ({tintColor}) => (
-                                   <Image source={require('./img/分类.png')}
+                                   <Image source={require('./img/fenlei.png')}
                                           style={[{height: 25, width: 25}, {tintColor: tintColor}]}/>
                             ),
 
@@ -71,7 +75,7 @@ const Tab = createBottomTabNavigator({
                     tabBarLabel: '用户',
                     tabBarVisible:true,
                     tabBarIcon: ({tintColor}) => (
-                           <Image source={require('./img/用户.png')}
+                           <Image source={require('./img/user.png')}
                                   style={[{height: 25, width: 25}, {tintColor: tintColor}]}/>
                     ),
 
@@ -138,6 +142,12 @@ const Stack = createStackNavigator({
                  header:null,
             }
         },
+    collectitem: {
+                screen: collectitem,
+                navigationOptions:{
+                     header:null,
+                }
+            },
     main: {
         screen: main,
 
@@ -145,6 +155,18 @@ const Stack = createStackNavigator({
     user: {
          screen: user,
     },
+    消息: {
+             screen: message,
+             navigationOptions:{
+                  header:null,
+             }
+        },
+    他的主页: {
+             screen: other,
+             navigationOptions:{
+                           header:null,
+                     }
+        },
     我的关注: {
              screen: interest,
         },
@@ -163,6 +185,12 @@ const Stack = createStackNavigator({
               header:null,
         }
     },
+    我的收藏:{
+            screen: collect,
+        },
+    我想做:{
+                screen: want,
+            },
 });
 
 /**
@@ -175,7 +203,7 @@ const Drawer = createDrawerNavigator({
             drawerLabel: '首页',
             drawerIcon: ({tintColor}) => (
                 <Image
-                    source={require('./img/主页.png')}
+                    source={require('./img/main.png')}
                     style={[styles.icon, {tintColor: tintColor}]}
                 />
             ),

@@ -18,7 +18,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 //默认应用的容器组件
 var width = Dimensions.get('window').width;
-var url='http://192.168.1.106:8080';
+var url='http://101.201.237.173:8082';
 export default class signin extends Component {
 
     //构造函数
@@ -54,7 +54,7 @@ export default class signin extends Component {
                 <TextInput style={styles.item2}
                       placeholder="密码"
                       onChangeText={(password) => this.setState({password})}
-                      value={this.state.password}
+                      secureTextEntry={true}
                 />
                 <TouchableOpacity style={{alignItems:'center'}}>
                     <SvgUri width="200" height="60" uri={url+'/captcha'} />

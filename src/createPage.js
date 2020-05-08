@@ -13,16 +13,33 @@ import {
     Dimensions,
     FlatList,
 } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
+
 import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 import RadioModal from 'react-native-radio-master';
 import PropTypes from 'prop-types';
 //默认应用的容器组件
+import ImagePicker from 'react-native-image-picker';
+import {imgcroper} from './imgcrop';
+var photoOptions = {
+  //底部弹出框选项
+  title: '请选择',
+  cancelButtonTitle: '取消',
+  takePhotoButtonTitle: '拍照',
+  chooseFromLibraryButtonTitle: '选择相册',
+  quality: 0.75,
+  allowsEditing: true,
+  noData: false,
+  storageOptions: {
+    skipBackup: true,
+    path: 'images'
+  }
+}
 var width = Dimensions.get('window').width;
-var url='http://192.168.1.106:8080';
+var url='http://101.201.237.173:8082';
 export default class createPage extends Component {
+
     static defaultProps = {
             taglist: [
                 {"id": "0","name": "户外探险",select: false},
@@ -303,36 +320,34 @@ export default class createPage extends Component {
         );
     }
     doFetch(a,b){
-        ImagePicker.openPicker({
-           width: a,
-           height: b,
-           cropping: false
-         }).then(image => {
-            if(a==1127){let uri=image.path;this.setState({uri});}
-                ImagePicker.openCropper({
-                  path: image.path,
-                  width: 290,
-                  height: 370
-                }).then(image => {
-                  let uri1=image.path;
-                  this.setState({uri1});
-                });
-         });
+        ImagePicker.showImagePicker(photoOptions, (response) => {
+          if (response.didCancel) {
+            return
+          }
+          this.getimg(response.uri,a);
+        })
+
+    }
+    async getimg(uri,a)
+    {
+        var b=await imgcroper(uri);
+        console.log(b);
+        if(a==1127){uri=b;this.setState({uri});}
+        let uri1=b;
+        this.setState({uri1});
     }
     dostep(item){
-            ImagePicker.openPicker({
-               width: 1127,
-               height: 431,
-               cropping: true
-             }).then(image => {
-                item.item.pictures[0]=image.path;
-                this.setState((state) => {
-                     state.stepdata[item.index].pictures= item.item.pictures;
-                     return { stepdata: state.stepdata }
-                })
-             });
-
-        }
+        ImagePicker.showImagePicker(photoOptions, (response) => {
+            if (response.didCancel) {
+                    return
+            }
+            item.item.pictures[0]=response.uri;
+            this.setState((state) => {
+                 state.stepdata[item.index].pictures= item.item.pictures;
+                 return { stepdata: state.stepdata }
+            })
+        })
+    }
     newstep(){
         var stepdata=this.state.stepdata;
         stepdata.push({'text':null,'pictures':[]});

@@ -17,7 +17,7 @@ import {
 import Swiper from 'react-native-swiper';
 //默认应用的容器组件
 var width = Dimensions.get('window').width;
-var url='http://192.168.1.106:8080';
+var url='http://101.201.237.173:8082';
 export default class main extends Component {
     //构造函数
     navigationOptions:{
@@ -74,8 +74,8 @@ export default class main extends Component {
         return (
           <TouchableOpacity style={styles.content} onPress={this.doFetch1.bind(this,item)}>
               <Image  style={styles.imgStyle} source={{uri:uri}}/>
-              <Text style={styles.title} >{item.item.title}</Text>
-              <Text style={{color:'#4d4d4d',flexWrap:'wrap'}} >创客:{item.item.owner.profile.nickname}</Text>
+              <Text style={styles.title} >{item.item.title.substring(0,11)}</Text>
+              <Text style={{color:'#4d4d4d',}} >创客:{item.item.owner.profile.nickname}</Text>
           </TouchableOpacity>
         )
       }
@@ -117,8 +117,8 @@ export default class main extends Component {
             <View style={styles.container}>
                 <View style={{backgroundColor: Colors.white}}>
                     <View style={styles.item}>
-                        <Image source={require('../img/搜索.png')} style={{margin:10,marginRight:5,height: 20, width: 20}}/>
-                        <TextInput style={{}}
+                        <Image source={require('../img/search.png')} style={{marginLeft:10,margin:5,marginRight:5,height: 20, width: 20}}/>
+                        <TextInput style={{fontSize:12,height:35}}
                             placeholder="搜索"
                             allowFontScaling={false}
                             onChangeText={(text) => this.search(text)}
@@ -160,20 +160,19 @@ const styles = StyleSheet.create({
         marginLeft:10,
         width:width/3-15,
         borderRadius:5,
-        backgroundColor: Colors.white
+        backgroundColor: Colors.white,
     },
     item:{
             margin:5,
             marginBottom:10,
-            height: 40,
-            borderRadius:20,
+            height: 30,
+            borderRadius:15,
             flexDirection: "row",
             backgroundColor:"#f3f3f3",
         },
     title:{
         borderBottomLeftRadius:5,
         borderBottomRightRadius:5,
-        backgroundColor: Colors.white
     },
     imgStyle: {
         width:width/3-15,

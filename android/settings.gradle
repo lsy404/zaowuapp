@@ -1,3 +1,7 @@
+include ':react-native-image-picker'
+
+project(':react-native-image-picker').projectDir =new File(settingsDir, '../node_modules/react-native-image-picker/android')
+
 rootProject.name = 'firstproject'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'

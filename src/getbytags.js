@@ -17,7 +17,7 @@ import {
 import Swiper from 'react-native-swiper';
 //默认应用的容器组件
 var width = Dimensions.get('window').width;
-var url='http://192.168.1.106:8080';
+var url='http://101.201.237.173:8082';
 export default class getbytags extends Component {
     //构造函数
     constructor(props) {
@@ -25,6 +25,7 @@ export default class getbytags extends Component {
         this.state = {
             data:[],
             name:null,
+            success:null,
             csrftoken:null,
         };
     }
@@ -55,6 +56,7 @@ export default class getbytags extends Component {
                           }).then((response) => {
                                return response.json();
                           }).then((json) => {
+                               this.setState({success:json.success});
                                return json.data;
                           }).then((data) => {
                                this.setState({data});
@@ -89,11 +91,11 @@ export default class getbytags extends Component {
         if(item===this.state.name&&this.state.data.length>0)
         return (
             <View style={styles.container}>
-                <View style={{flexDirection: "row",width:width,backgroundColor: Colors.white}}>
-                    <TouchableOpacity style={{margin:10}} onPress={this.back.bind(this)}>
-                         <Image source={require('../img/返回.png')} style={{height: 20, width: 20}}/>
+                <View style={{ elevation:5,height:55,flexDirection: "row",width:width,backgroundColor: Colors.white}}>
+                    <TouchableOpacity style={{margin:20}} onPress={this.back.bind(this)}>
+                          <Image source={require('../img/return.png')} style={{height: 20, width: 20}}/>
                     </TouchableOpacity>
-                    <Text style={{marginTop:10,marginBottom:10}}>{this.state.name}</Text>
+                    <Text style={{margin:17}}>{this.state.name}</Text>
                 </View>
                 <FlatList
                      data = {this.state.data}
@@ -103,14 +105,14 @@ export default class getbytags extends Component {
                 />
             </View>
         )
-        else if(item===this.state.name&&this.state.data.length==0)
+        else if(item===this.state.name&&this.state.data.length==0&&this.state.success==true)
         return (
             <View style={styles.container}>
-                 <View style={{flexDirection: "row",width:width,backgroundColor: Colors.white}}>
-                     <TouchableOpacity style={{margin:10}} onPress={this.back.bind(this)}>
-                          <Image source={require('../img/返回.png')} style={{height: 20, width: 20}}/>
-                     </TouchableOpacity>
-                     <Text style={{marginTop:10,marginBottom:10}}>{this.state.name}</Text>
+                 <View style={{ elevation:5,height:55,flexDirection: "row",width:width,backgroundColor: Colors.white}}>
+                      <TouchableOpacity style={{margin:20}} onPress={this.back.bind(this)}>
+                           <Image source={require('../img/return.png')} style={{height: 20, width: 20}}/>
+                      </TouchableOpacity>
+                      <Text style={{margin:17}}>{this.state.name}</Text>
                  </View>
                  <TouchableOpacity  style={{alignItems:'center',marginTop:250,height:'100%',width: '100%'}}>
                      <Text style={{marginTop:5}} >空空如也</Text>
